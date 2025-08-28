@@ -1,0 +1,32 @@
+[
+  {
+    "id": 15,
+    "kind": "tag",
+    "tag_id": 4845,
+    "company": null,
+    "notify_webhook": null,
+    "guild_id": "1410087848408911884",
+    "channel_id": "1410087849365078017",
+    "user_id": "541567649935785984"
+  },
+  {
+    "id": 16,
+    "kind": "tag",
+    "tag_id": 1667,
+    "company": null,
+    "notify_webhook": null,
+    "guild_id": "1410087848408911884",
+    "channel_id": "1410087849365078017",
+    "user_id": "541567649935785984"
+  },
+  {
+    "id": 17,
+    "kind": "tag",
+    "tag_id": 4057,
+    "company": null,
+    "notify_webhook": null,
+    "guild_id": "1410087848408911884",
+    "channel_id": "1410087849365078017",
+    "user_id": "541567649935785984"
+  }
+]

@@ -1,0 +1,83 @@
+name: Run Steam Sale Watcher Bot
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/15 * * * *"  # every 15 minutes
+
+concurrency:
+  group: steam-sale-watcher-bot
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Ensure DB directory
+        run: mkdir -p .data
+
+      # Restore the most recent DB (prefix restore so we don't stick to one immutable cache)
+      - name: Restore DB cache
+        id: cache-db
+        uses: actions/cache/restore@v4
+        with:
+          path: .data/steam.db
+          key: ${{ runner.os }}-steam-db-v1-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-steam-db-v1-
+
+      - name: Show restored DB (if any)
+        run: |
+          if [ -f .data/steam.db ]; then
+            echo "Restored DB:"
+            ls -lh .data/steam.db
+          else
+            echo "No prior DB restored (first run?)"
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Build (if TypeScript)
+        run: npm run build --if-present
+
+      - name: Start bot
+        env:
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+          DISCORD_APP_ID: ${{ secrets.DISCORD_APP_ID }}
+          STEAM_REGION: ${{ secrets.STEAM_REGION }}
+          STEAM_LANG: ${{ secrets.STEAM_LANG }}
+          DB_FILE: ./.data/steam.db
+        run: node dist/index.js
+
+      # Save an updated DB under a unique key for this run
+      - name: Save DB cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .data/steam.db
+          key: ${{ runner.os }}-steam-db-v1-${{ github.run_id }}
+
+      # Optional: upload the DB for debugging (so you can download it)
+      - name: Upload DB artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: steam-db
+          path: .data/steam.db
+          retention-days: 7
+

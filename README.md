@@ -157,6 +157,11 @@ Covers:
 
 ---
 
+## Invite Steam Sale Watcher
+[Click here to invite Synapse to your server] (https://discord.com/oauth2/authorize?client_id=1410110790585024614)
+
+---
+
 ## ❓ Troubleshooting
 
 * **Commands not visible** → Invite bot with both scopes (`bot`, `applications.commands`).
